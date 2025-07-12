@@ -1,0 +1,52 @@
+﻿table Ventes
+
+	measure 'Total CA' = SUM(Ventes[ChiffreAffaires])
+		formatString: 0
+
+	column Date
+		dataType: dateTime
+		formatString: Long Date
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Produit
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Produit
+
+		annotation SummarizationSetBy = Automatic
+
+	column Pays
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Pays
+
+		annotation SummarizationSetBy = Automatic
+
+	column ChiffreAffaires
+		dataType: int64
+		formatString: 0
+		summarizeBy: sum
+		sourceColumn: ChiffreAffaires
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Ventes = m
+		mode: import
+		source =
+				let
+				    Source = Excel.Workbook(File.Contents("C:\Users\Jepssen\OneDrive - Triskill\Documents T\Agents IA\Premier\data\ventes.xlsx"), null, true),
+				    Feuil1_Sheet = Source{[Item="Feuil1",Kind="Sheet"]}[Data],
+				    #"En-têtes promus" = Table.PromoteHeaders(Feuil1_Sheet, [PromoteAllScalars=true]),
+				    #"Type modifié" = Table.TransformColumnTypes(#"En-têtes promus",{{"Date", type date}, {"Produit", type text}, {"Pays", type text}, {"ChiffreAffaires", Int64.Type}})
+				in
+				    #"Type modifié"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
