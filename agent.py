@@ -1,6 +1,6 @@
 import os
 import re
-
+# Plusieurs formules dax à venir
 def add_dax_measure(tmdl_path, measure_name, dax_formula):
     if not os.path.exists(tmdl_path):
         return False
